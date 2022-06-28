@@ -5,6 +5,7 @@ import time
 import ssl
 import paho.mqtt.client as mqtt
 import ast
+import json
 
 bot = TeleBot(token=token)
 
@@ -12,7 +13,7 @@ f = open('var.txt', 'r') #f.read()
 #info = ast.literal_eval(f.read())
 device1 = {'thingId': 'device1', 'type': 'telemetry', 'timeStamp': 1656401248621, 'hwVer': '1.0', 'swVer': '1.0', 'contractVer': '1.0', 'current': {'geo0': {'lat': 55.912967, 'lon': 49.285896}, 'geo1': {'lat': 55.91368522639197, 'lon': 49.284930287168024}}, 'isWatering': True, 'isWorking': True}
 device2 = {"thingId": "device2", "type": "telemetry", "timeStamp": 1656401252482, "hwVer": "1.0", "swVer": "1.0", "contractVer": "1.0", "current": {"geo0": {"lat": 56.020424, "lon": 49.665864}, "geo1": {"lat": 56.01926615841914, "lon": 49.65864081931579}}, "isWatering": True, "isWorking": True}
-device3 = {"thingId": "device3", "type": "telemetry", "timeStamp": 1656401249614, "hwVer": "1.0", "swVer": "1.0", "contractVer": "1.0", "current": {"geo0": {"lat": 56.01387, "lon": 49.631268}, "geo1": {"lat": 56.011921502553484, "lon": 49.626642715056256}}, "isWatering": True, "isWorking": True}
+device3 = {"thingId": "devic    e3", "type": "telemetry", "timeStamp": 1656401249614, "hwVer": "1.0", "swVer": "1.0", "contractVer": "1.0", "current": {"geo0": {"lat": 56.01387, "lon": 49.631268}, "geo1": {"lat": 56.011921502553484, "lon": 49.626642715056256}}, "isWatering": True, "isWorking": True}
 typess = ['thingId', 'type', 'timeStamp', 'hwVer', 'swVer', 'contractVer', 'current', 'isWatering', 'isWorking']
 devices = ['device1', 'device2', 'device3']
 
@@ -60,9 +61,14 @@ def process_message(message):
 
 def save(message, device):
     if device == 'device1':
-        for type in typess:
-            if message.text == type:
-                bot.send_message(message.chat.id, f'▫️{type.capitalize()} = {device1.get(type)}', reply_markup=keyb2)
+        if message.text != 'Полностью':
+            for type in typess:
+                if type == 'current': #info = ast.literal_eval(f.read())
+                    a = str(device1.get(type)).find("'lat': ")
+                    b = str(device1.get(type)).find("},")
+                    bot.send_message(message.chat.id, f"▫️{type.capitalize()} = {str(device1.get(type))[a:b]}")
+                elif message.text == type:
+                    bot.send_message(message.chat.id, f"▫️{type.capitalize()} = {device1.get(type)}", reply_markup=keyb2)
         if message.text == 'Полностью':
             list = []
             for type in typess:
@@ -74,9 +80,14 @@ def save(message, device):
                     list.append(f'▫️{type.capitalize()} = {device1.get(type)}')
             bot.send_message(message.chat.id, '\n'.join(list))
     elif device == 'device2':
-        for type in typess:
-            if message.text == type:
-                bot.send_message(message.chat.id, f'▫️{type.capitalize()} = {device2.get(type)}', reply_markup=keyb2)
+        if message.text != 'Полностью':
+            for type in typess:
+                if type == 'current':
+                    a = str(device1.get(type)).find("'lat': ")
+                    b = str(device1.get(type)).find("},")
+                    bot.send_message(message.chat.id, f'▫️{type.capitalize()} = {str(device2.get(type))[a:b]}')
+                elif message.text == type:
+                    bot.send_message(message.chat.id, f'▫️{type.capitalize()} = {device2.get(type)}', reply_markup=keyb2)
         if message.text == 'Полностью':
             list = []
             for type in typess:
@@ -88,9 +99,14 @@ def save(message, device):
                     list.append(f'▫️{type.capitalize()} = {device2.get(type)}')
             bot.send_message(message.chat.id, '\n'.join(list))
     elif device == 'device3':
-        for type in typess:
-            if message.text == type:
-                bot.send_message(message.chat.id, f'▫️{type.capitalize()} = {device3.get(type)}', reply_markup=keyb2)
+        if message.text != 'Полностью':
+            for type in typess:
+                if type == 'current':
+                    a = str(device3.get(type)).find("'lat': ")
+                    b = str(device3.get(type)).find("},")
+                    bot.send_message(message.chat.id, f'▫️{type.capitalize()} = {str(device3.get(type))[a:b]}')
+                elif message.text == type:
+                    bot.send_message(message.chat.id, f'▫️{type.capitalize()} = {device3.get(type)}', reply_markup=keyb2)
         if message.text == 'Полностью':
             list = []
             for type in typess:
@@ -123,9 +139,16 @@ def updater():
                 jsonString = message.payload
                 dict_str = jsonString.decode("UTF-8")
                 # global jsonData
-                # jsonData = ast.literal_eval(dict_str)
+                jsonData = ast.literal_eval(dict_str)
                 file1 = open("var.txt", "a")
                 file1.write(dict_str)
+
+                if jsonData.get("thingId") == "device1":
+                    device1 = jsonData
+                if jsonData.get("thingId") == "device2":
+                    device2 = jsonData
+                if jsonData.get("thingId") == "device3":
+                    device3 = jsonData
 
             broker_address = "mqtt.cloud.yandex.net"
             port = 8883
