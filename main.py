@@ -7,13 +7,14 @@ import paho.mqtt.client as mqtt
 import ast
 import json
 
+token = '5595230138:AAHI3UxNQzuthkLA1mTfvw93fV2EY8Q_dG8'
 bot = TeleBot(token=token)
 
 f = open('var.txt', 'r') #f.read()
 #info = ast.literal_eval(f.read())
 device1 = {'thingId': 'device1', 'type': 'telemetry', 'timeStamp': 1656401248621, 'hwVer': '1.0', 'swVer': '1.0', 'contractVer': '1.0', 'current': {'geo0': {'lat': 55.912967, 'lon': 49.285896}, 'geo1': {'lat': 55.91368522639197, 'lon': 49.284930287168024}}, 'isWatering': True, 'isWorking': True}
 device2 = {"thingId": "device2", "type": "telemetry", "timeStamp": 1656401252482, "hwVer": "1.0", "swVer": "1.0", "contractVer": "1.0", "current": {"geo0": {"lat": 56.020424, "lon": 49.665864}, "geo1": {"lat": 56.01926615841914, "lon": 49.65864081931579}}, "isWatering": True, "isWorking": True}
-device3 = {"thingId": "devic    e3", "type": "telemetry", "timeStamp": 1656401249614, "hwVer": "1.0", "swVer": "1.0", "contractVer": "1.0", "current": {"geo0": {"lat": 56.01387, "lon": 49.631268}, "geo1": {"lat": 56.011921502553484, "lon": 49.626642715056256}}, "isWatering": True, "isWorking": True}
+device3 = {"thingId": "device3", "type": "telemetry", "timeStamp": 1656401249614, "hwVer": "1.0", "swVer": "1.0", "contractVer": "1.0", "current": {"geo0": {"lat": 56.01387, "lon": 49.631268}, "geo1": {"lat": 56.011921502553484, "lon": 49.626642715056256}}, "isWatering": True, "isWorking": True}
 typess = ['thingId', 'type', 'timeStamp', 'hwVer', 'swVer', 'contractVer', 'current', 'isWatering', 'isWorking']
 devices = ['device1', 'device2', 'device3']
 
@@ -67,8 +68,10 @@ def save(message, device):
                     a = str(device1.get(type)).find("'lat': ")
                     b = str(device1.get(type)).find("},")
                     bot.send_message(message.chat.id, f"▫️{type.capitalize()} = {str(device1.get(type))[a:b]}")
+                    break
                 elif message.text == type:
                     bot.send_message(message.chat.id, f"▫️{type.capitalize()} = {device1.get(type)}", reply_markup=keyb2)
+                    break
         if message.text == 'Полностью':
             list = []
             for type in typess:
@@ -86,8 +89,10 @@ def save(message, device):
                     a = str(device1.get(type)).find("'lat': ")
                     b = str(device1.get(type)).find("},")
                     bot.send_message(message.chat.id, f'▫️{type.capitalize()} = {str(device2.get(type))[a:b]}')
+                    break
                 elif message.text == type:
                     bot.send_message(message.chat.id, f'▫️{type.capitalize()} = {device2.get(type)}', reply_markup=keyb2)
+                    break
         if message.text == 'Полностью':
             list = []
             for type in typess:
@@ -105,8 +110,10 @@ def save(message, device):
                     a = str(device3.get(type)).find("'lat': ")
                     b = str(device3.get(type)).find("},")
                     bot.send_message(message.chat.id, f'▫️{type.capitalize()} = {str(device3.get(type))[a:b]}')
+                    break
                 elif message.text == type:
                     bot.send_message(message.chat.id, f'▫️{type.capitalize()} = {device3.get(type)}', reply_markup=keyb2)
+                    break
         if message.text == 'Полностью':
             list = []
             for type in typess:
@@ -131,7 +138,7 @@ def updater():
                     Connected = True
                 else:
                     print("Connection failed")
-            divises = {'thingId': 'device1', 'thingId': 'device2', 'thingId': 'device3'}
+
             def on_message(client, userdata, message):
                 file2 = open("var.txt", "w+")
                 file2.write('')
@@ -144,11 +151,11 @@ def updater():
                 file1.write(dict_str)
 
                 if jsonData.get("thingId") == "device1":
-                    device1 = jsonData
+                    device1 = dict(jsonData)
                 if jsonData.get("thingId") == "device2":
-                    device2 = jsonData
+                    device2 = dict(jsonData)
                 if jsonData.get("thingId") == "device3":
-                    device3 = jsonData
+                    device3 = dict(jsonData)
 
             broker_address = "mqtt.cloud.yandex.net"
             port = 8883
