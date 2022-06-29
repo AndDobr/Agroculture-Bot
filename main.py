@@ -7,7 +7,6 @@ import paho.mqtt.client as mqtt
 import ast
 import json
 
-token = '5595230138:AAHI3UxNQzuthkLA1mTfvw93fV2EY8Q_dG8'
 bot = TeleBot(token=token)
 
 f = open('var.txt', 'r') #f.read()
